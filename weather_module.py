@@ -7,8 +7,8 @@ def get_weather_emoji():
     # 기상청 API 설정
     SERVICE_KEY = WEATHER_SERVICE_KEY
     NX, NY = WEATHER_NX, WEATHER_NY
-    BASE_DATE = datetime.now().strftime("%Y%m%d")
-    BASE_TIME = "0500"
+    BASE_DATE = datetime.now().strftime("%Y%m%d") # 오늘 날짜
+    BASE_TIME = "0500" # 새벽 5시 발표 데이터 기준
 
     # API URL 구성
     URL = f"{WEATHER_BASE_URL}?serviceKey={SERVICE_KEY}&numOfRows=250&pageNo=1&base_date={BASE_DATE}&base_time={BASE_TIME}&nx={NX}&ny={NY}"

@@ -11,7 +11,7 @@ def alarm_ui():
         st.session_state.alarm_minute = 0
 
     # 시간/분 선택 및 설정/취소 버튼
-    col1, col2, col3, col4 = st.columns([1, 1, 0.4, 1])
+    col1, col2, col3, col4 = st.columns([1, 1, 0.3, 1])
     with col1:
         st.session_state.alarm_hour = st.selectbox("시간", range(0, 24), index=st.session_state.alarm_hour)
     with col2:

@@ -15,8 +15,10 @@ def get_dust_info():
             message = data.get("data") if isinstance(data.get("data"), str) else "미세먼지 정보를 가져오지 못했습니다."
             return f"⚠️ 고덕동 미세먼지 정보를 가져올 수 없습니다: {message}"
 
+        # 도시 및 대기질 데이터 추출
         station_name = data.get("data", {}).get("city", {}).get("name", "고덕동")
         iaqi = data.get("data", {}).get("iaqi", {})
+        # pm10(미세먼지), pm25(초미세먼지) 값 추출
         pm10_value = iaqi.get("pm10", {}).get("v")
         pm25_value = iaqi.get("pm25", {}).get("v")
 
