@@ -29,7 +29,7 @@ st.subheader("😷 미세먼지 현황")
 dust_result = get_dust_info()
 st.success(dust_result)
 
-st.markdown("---")
+# st.markdown("---")
 
 st.subheader(f"🗺️ {st.session_state.bus_alarm_time} 도착 목표 경로 (30초 자동 갱신)")
 
@@ -62,7 +62,7 @@ def display_integrated_info():
 
                 # 버스가 정류장에 도착할 예상 시각
                 estimated_bus_arrival_dt = now + timedelta(minutes=mins_to_bus)
-                
+
                 # [알람 조건 예시] 8시 등교 목표 시 7시 40분까지 버스를 타야 함 (이동 20분 소요).
                 # 만약 현재 7시 33분이고 버스가 7분 뒤(7시 40분) 도착 예정이라면: "3412번 도착 7분 전입니다. 놓치면 지각입니다" 알람 발생.
                 # 현재 정류장에 오는 버스가 딱 맞춰 타야 하는 버스인지 확인 (시:분 일치 여부)

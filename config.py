@@ -13,4 +13,4 @@ WEATHER_BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/get
 WEATHER_NX, WEATHER_NY = 37, 127  # 고덕동 격자 좌표
 
 # 4. 알람 기준 설정: 학교/회사 목표 도착 시간
-TARGET_ARRIVAL_TIME = "10:30"
+TARGET_ARRIVAL_TIME = "14:40"
