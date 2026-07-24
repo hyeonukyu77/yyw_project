@@ -32,3 +32,11 @@ pandas as pd
 matplotlib.pyplot as plt
 streamlit as st
 )
+
+execute >
+
+python -m streamlit run app.py
+
+c파일 빌드
+cd C:\yyw_project
+.\venv\Scripts\python.exe setup.py build_ext --inplace --force
