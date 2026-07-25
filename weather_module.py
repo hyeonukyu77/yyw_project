@@ -5,7 +5,10 @@ from datetime import datetime
 from config import WEATHER_SERVICE_KEY, WEATHER_NX, WEATHER_NY, WEATHER_BASE_URL
 
 def convert_to_grid(latitude, longitude):
-    """Convert WGS84 coordinates to the KMA DFS grid used by VilageFcst."""
+    """
+    브라우저의 GPS 좌표(위도·경도)를 기상청 격자 좌표(nx, ny)로 바꾼다.
+    기상청 날씨 API는 위도·경도 대신 자체 격자 좌표를 사용하므로 이 변환이 필요하다.
+    """
     earth_radius = 6371.00877
     grid_size = 5.0
     standard_parallel_1 = 30.0

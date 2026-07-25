@@ -1,6 +1,5 @@
 import requests
 
-
 def get_neighborhood_name(latitude, longitude):
     """Return a Korean neighborhood-level name for WGS84 coordinates."""
     if latitude is None or longitude is None:
@@ -20,6 +19,7 @@ def get_neighborhood_name(latitude, longitude):
             timeout=5,
         )
         response.raise_for_status()
+
         address = response.json().get("address", {})
 
         preferred_keys = (
