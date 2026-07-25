@@ -1,7 +1,11 @@
 from datetime import datetime
 
 import streamlit as st
-from streamlit_js_eval import get_geolocation
+
+try:
+    from streamlit_js_eval import get_geolocation
+except ModuleNotFoundError:
+    get_geolocation = None
 
 from dust_module import get_dust_info
 from location_module import get_neighborhood_name
@@ -18,7 +22,11 @@ st.set_page_config(
 st.markdown("<h1>아침도우미</h1>", unsafe_allow_html=True)
 st.write(f"📅 날짜 : {datetime.now().strftime('%Y년 %m월 %d일')}")
 
-location = get_geolocation(component_key="weather_geolocation")
+location = (
+    get_geolocation(component_key="weather_geolocation")
+    if get_geolocation is not None
+    else None
+)
 latitude = None
 longitude = None
 if location and location.get("coords"):

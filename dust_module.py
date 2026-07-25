@@ -12,6 +12,7 @@ def get_dust_info(latitude=None, longitude=None):
 
     try:
         response = requests.get(url, timeout=10)
+        response.raise_for_status()
         data = response.json()
 
         # 1. API 응답 상태 확인
@@ -48,5 +49,5 @@ def get_dust_info(latitude=None, longitude=None):
 
         return f"미세먼지 {p10_emoji}({p10_label}) | 초미세먼지 {p25_emoji}({p25_label})"
 
-    except Exception as e:
-        return f"⚠️ 미세먼지 정보를 가져올 수 없습니다. {str(e)}"    
+    except (requests.RequestException, ValueError, TypeError):
+        return "⚠️ 미세먼지 정보를 가져올 수 없습니다. 잠시 후 다시 시도해 주세요."

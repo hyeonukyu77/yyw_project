@@ -1,7 +1,8 @@
 import requests
 import xml.etree.ElementTree as ET
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
+from urllib.parse import unquote
 from config import WEATHER_SERVICE_KEY, WEATHER_NX, WEATHER_NY, WEATHER_BASE_URL
 
 def convert_to_grid(latitude, longitude):
@@ -55,24 +56,56 @@ def get_weather_emoji(latitude=None, longitude=None):
         NX, NY = convert_to_grid(float(latitude), float(longitude))
     else:
         NX, NY = WEATHER_NX, WEATHER_NY
-    BASE_DATE = datetime.now().strftime("%Y%m%d") # 오늘 날짜
-    BASE_TIME = "0500" # 새벽 5시 발표 데이터 기준
+    now = datetime.now()
+    # 단기예보는 02, 05, 08, 11, 14, 17, 20, 23시에 발표되며
+    # API에는 발표 약 10분 뒤부터 안정적으로 제공된다.
+    available_times = (2, 5, 8, 11, 14, 17, 20, 23)
+    candidates = [
+        now.replace(hour=hour, minute=10, second=0, microsecond=0)
+        for hour in available_times
+    ]
+    available = [candidate for candidate in candidates if candidate <= now]
+    base_datetime = max(available) if available else (
+        now - timedelta(days=1)
+    ).replace(hour=23, minute=10, second=0, microsecond=0)
+    BASE_DATE = base_datetime.strftime("%Y%m%d")
+    BASE_TIME = base_datetime.strftime("%H00")
 
     # API URL 구성
-    URL = f"{WEATHER_BASE_URL}?serviceKey={SERVICE_KEY}&numOfRows=250&pageNo=1&base_date={BASE_DATE}&base_time={BASE_TIME}&nx={NX}&ny={NY}"
     try:
         # API에서 날씨 데이터 조회
-        response = requests.get(URL, timeout=10)
+        response = requests.get(
+            WEATHER_BASE_URL,
+            params={
+                "serviceKey": unquote(SERVICE_KEY),
+                "numOfRows": 1000,
+                "pageNo": 1,
+                "dataType": "XML",
+                "base_date": BASE_DATE,
+                "base_time": BASE_TIME,
+                "nx": NX,
+                "ny": NY,
+            },
+            timeout=10,
+        )
+        response.raise_for_status()
         root = ET.fromstring(response.content)
+
+        result_code = root.findtext(".//resultCode")
+        if result_code != "00":
+            result_message = root.findtext(".//resultMsg") or "알 수 없는 API 오류"
+            return f"⚠️ 날씨 정보를 가져올 수 없습니다. ({result_message})"
 
         # XML 데이터 파싱
         weather_data = {}
 
         for item in root.iter("item"):
-            fcst_date = item.find("fcstDate").text
-            fcst_time = item.find("fcstTime").text
-            category = item.find("category").text
-            fcst_value = item.find("fcstValue").text
+            fcst_date = item.findtext("fcstDate")
+            fcst_time = item.findtext("fcstTime")
+            category = item.findtext("category")
+            fcst_value = item.findtext("fcstValue")
+            if not all((fcst_date, fcst_time, category, fcst_value)):
+                continue
 
             key = f"{fcst_date}_{fcst_time}"
 
@@ -81,7 +114,10 @@ def get_weather_emoji(latitude=None, longitude=None):
 
             weather_data[key][category] = fcst_value
 
-        # 5시~23시 동안의 날씨 데이터로 하루의 대표 날씨 결정
+        if not weather_data:
+            return "⚠️ 제공된 날씨 예보가 없습니다."
+
+        # 오늘 5시~23시 동안의 데이터로 하루의 대표 날씨 결정
         snow_count = 0
         rain_count = 0
         cloudy_count = 0
@@ -89,6 +125,8 @@ def get_weather_emoji(latitude=None, longitude=None):
 
         for key in sorted(weather_data.keys()):
             fcst_date, fcst_time = key.split("_")
+            if fcst_date != now.strftime("%Y%m%d"):
+                continue
             date_obj = datetime.strptime(f"{fcst_date}{fcst_time}", "%Y%m%d%H%M")
 
             hour = date_obj.hour
@@ -123,5 +161,5 @@ def get_weather_emoji(latitude=None, longitude=None):
 
         return today_weather
 
-    except Exception as e:
-        return f"❌ 오류: {str(e)}"
+    except (requests.RequestException, ET.ParseError, TypeError, ValueError):
+        return "⚠️ 날씨 정보를 가져올 수 없습니다. 잠시 후 다시 시도해 주세요."

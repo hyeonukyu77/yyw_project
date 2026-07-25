@@ -7,5 +7,6 @@ START_COORDS = (127.1493155, 37.5598741)
 
 # 기상청 API 설정 (단기예보)
 WEATHER_SERVICE_KEY = "cN9NW1wAwTXgzCh7aPdgwZTons5JNB89mUqkP2P6sDtYYh%2Bc%2BAv3TJ0qq%2FQ2KwzdW5Li41upWP9jU1JimHoOtg%3D%3D"
-WEATHER_BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
-WEATHER_NX, WEATHER_NY = 37, 127 
+WEATHER_BASE_URL = "https://apis.data.go.kr/1360000/VilageFcstInfoService_2.0/getVilageFcst"
+# START_COORDS(서울 강동구 인근)를 기상청 격자로 변환한 기본 좌표
+WEATHER_NX, WEATHER_NY = 63, 127
